@@ -60,7 +60,7 @@ export function LoginPage() {
                 {...form.getInputProps('password')}
               />
               
-              <Button type="submit" fullWidth size="md" loading={isLoading}>
+              <Button type="submit" fullWidth size="md" loading={isLoading} variant="filled">
                 Sign In
               </Button>
             </Stack>

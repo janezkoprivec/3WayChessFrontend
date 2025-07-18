@@ -83,7 +83,7 @@ export function RegisterPage() {
                 {...form.getInputProps('confirmPassword')}
               />
               
-              <Button type="submit" fullWidth size="md" loading={isLoading}>
+              <Button type="submit" fullWidth size="md" loading={isLoading} variant="filled">
                 Create Account
               </Button>
             </Stack>
