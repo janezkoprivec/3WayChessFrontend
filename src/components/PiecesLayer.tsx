@@ -1,7 +1,7 @@
-import { useCallback } from 'react';
 import { ChessPiece } from './ChessPiece';
 import { ChessPiece as GamePiece } from '../../web/tri-hex-chess';
-import { hexToPixel, transformCoordinates, BoardOrientation } from '../utils/hexagonUtils';
+import { transformCoordinates, BoardOrientation } from '../utils/hexagonUtils';
+import { encodePieceId } from '../utils/pieceIdUtils';
 
 export interface Move {
   pieceId: string;
@@ -14,28 +14,17 @@ export interface Move {
 interface PiecesLayerProps {
   pieces: GamePiece[];
   size: number; 
-  onPieceMove?: (move: Move) => void;
-  onPieceClick?: (piece: GamePiece) => void;
-  selectedPieceId?: string;
   boardOrientation?: BoardOrientation;
 }
 
 export function PiecesLayer({ 
   pieces, 
   size, 
-  onPieceMove, 
-  onPieceClick,
-  selectedPieceId,
   boardOrientation = 'white'
 }: PiecesLayerProps) {
-  const handlePieceClick = useCallback((piece: GamePiece) => {
-    if (onPieceClick) {
-      onPieceClick(piece);
-    }
-  }, [onPieceClick]);
 
   const getPieceId = (piece: GamePiece): string => {
-    return `${piece.player}-${piece.piece}-${piece.coordinates.q}-${piece.coordinates.r}`;
+    return encodePieceId(piece.player, piece.piece, piece.coordinates.q, piece.coordinates.r);
   };
 
   return (
@@ -57,44 +46,10 @@ export function PiecesLayer({
             q={transformedCoords.q}
             r={transformedCoords.r}
             size={size}
-            onClick={() => handlePieceClick(piece)}
             boardOrientation={boardOrientation}
           />
         );
       })}
-      
-      {selectedPieceId && (
-        (() => {
-          const selectedPiece = pieces.find(p => getPieceId(p) === selectedPieceId);
-          if (!selectedPiece) return null;
-          
-          const transformedCoords = transformCoordinates(
-            selectedPiece.coordinates.q, 
-            selectedPiece.coordinates.r,
-            selectedPiece.coordinates.s,
-            boardOrientation
-          );
-          
-          const { x, y } = hexToPixel(
-            transformedCoords.q, 
-            transformedCoords.r, 
-            size
-          );
-          
-          return (
-            <circle
-              cx={x}
-              cy={y}
-              r={size * 0.4}
-              fill="none"
-              stroke="#FFD700"
-              strokeWidth="3"
-              strokeDasharray="5,5"
-              pointerEvents="none"
-            />
-          );
-        })()
-      )}
     </g>
   );
 } 

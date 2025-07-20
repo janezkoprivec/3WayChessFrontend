@@ -10,7 +10,6 @@ interface ChessPieceProps {
   q: number;
   r: number;
   size: number; 
-  onClick?: () => void;
   boardOrientation?: BoardOrientation;
 }
 
@@ -20,7 +19,6 @@ export function ChessPiece({
   q, 
   r, 
   size, 
-  onClick,
   boardOrientation = 'white'
 }: ChessPieceProps) {
 
@@ -57,7 +55,7 @@ export function ChessPiece({
   }, [q, r, size, piece, color, boardOrientation]);
 
   return (
-    <g onClick={onClick} style={{ cursor: onClick ? 'pointer' : 'default' }}>
+    <g>
       <image
         x={x - pieceSize / 2}
         y={y - pieceSize / 2}

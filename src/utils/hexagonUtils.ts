@@ -74,6 +74,7 @@ export function transformCoordinates(
   s: number, 
   orientation: BoardOrientation
 ): { q: number; r: number; s: number } {
+
   switch (orientation) {
     case 'white':
       return { q, r, s };

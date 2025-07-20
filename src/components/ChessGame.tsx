@@ -1,9 +1,12 @@
-import { useState, useMemo, useEffect, useCallback } from 'react';
-import { HexagonalBoard, BoardDimensions } from './HexagonalBoard';
-import { PiecesLayer, Move } from './PiecesLayer';
-import { Game, ChessPiece as GamePiece, Color } from '../../web/tri-hex-chess';
+import { useState, useMemo, useEffect } from 'react';
+import { HexagonalBoard } from './HexagonalBoard';
+import { PiecesLayer } from './PiecesLayer';
+import { GameInteractionLayer } from './GameInteractionLayer';
+import { Game, ChessPiece as GamePiece, Move } from '../../web/tri-hex-chess';
 import { createHex, BoardOrientation } from '../utils/hexagonUtils';
+import { encodePieceId } from '../utils/pieceIdUtils';
 import { Button, Group, Stack, Text } from '@mantine/core';
+import { useCurrentTurn } from '../hooks/useCurrentTurn';
 
 interface ChessGameProps {
   height: number;
@@ -16,10 +19,15 @@ export function ChessGame({
 }: ChessGameProps) {
   const [game, setGame] = useState<Game | null>(null);
   const [pieces, setPieces] = useState<GamePiece[]>([]);
-  const [selectedPieceId, setSelectedPieceId] = useState<string | undefined>();
+  const [selectedPiece, setSelectedPiece] = useState<GamePiece | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [boardOrientation, setBoardOrientation] = useState<BoardOrientation>('white');
+  const { currentTurn, updateTurn } = useCurrentTurn(game);
+
+  const selectedPieceId = useMemo(() => {
+    return selectedPiece ? encodePieceId(selectedPiece.player, selectedPiece.piece, selectedPiece.coordinates.q, selectedPiece.coordinates.r) : undefined;
+  }, [selectedPiece]);
 
   const { boardSize, boardDimensions } = useMemo(() => {
     const hexDict: Record<string, any> = {};
@@ -86,24 +94,21 @@ export function ChessGame({
     initializeGame();
   }, []);
 
-  const handlePieceClick = (piece: GamePiece) => {
-    const pieceId = `${piece.player}-${piece.piece}-${piece.coordinates.q}-${piece.coordinates.r}`;
+  const handlePieceSelect = (piece: GamePiece | null) => {
+    setSelectedPiece(piece);
+  };
+
+  const handleMoveSelect = (move: Move) => {
+    if (!game || !selectedPiece) return;
+        
+    game.commitMove(move, null, true);
+    setPieces(game.getPieces());
     
-    console.log('Piece clicked:', pieceId);
-
-    const legalMoves = game?.queryMoves(piece.coordinates);
-    console.log('Legal moves:', legalMoves);
-
-    if (selectedPieceId === pieceId) {
-      setSelectedPieceId(undefined);
-    } else {
-      setSelectedPieceId(pieceId);
-    }
+    updateTurn();
+    
+    setSelectedPiece(null);
   };
 
-  const handlePieceMove = (move: Move) => {
-    console.log('Piece moved:', move);
-  };
 
   const handleOrientationChange = (orientation: BoardOrientation) => {
     setBoardOrientation(orientation);
@@ -171,31 +176,41 @@ export function ChessGame({
         alignItems: 'center',
         position: 'relative'
       }}>
-        <svg
-          width={boardDimensions.width}
-          height={height}
-          viewBox={`${boardDimensions.minX} ${boardDimensions.minY} ${boardDimensions.width} ${boardDimensions.height}`}
-          style={{ 
-            border: '1px solid #ccc',
-            maxWidth: '100%',
-            height: 'auto'
-          }}
-        >
-          <HexagonalBoard 
+        <div style={{ position: 'relative' }}>
+          <svg
+            width={boardDimensions.width}
             height={height}
-            showCoordinates={showCoordinates}
-            boardOrientation={boardOrientation}
-          />
-          
-          <PiecesLayer
-            pieces={pieces}
-            size={boardSize}
-            onPieceMove={handlePieceMove}
-            onPieceClick={handlePieceClick}
-            selectedPieceId={selectedPieceId}
-            boardOrientation={boardOrientation}
-          />
-        </svg>
+            viewBox={`${boardDimensions.minX} ${boardDimensions.minY} ${boardDimensions.width} ${boardDimensions.height}`}
+            style={{ 
+              border: '1px solid #ccc',
+              maxWidth: '100%',
+              height: 'auto'
+            }}
+          >
+            <HexagonalBoard 
+              height={height}
+              showCoordinates={showCoordinates}
+              boardOrientation={boardOrientation}
+              selectedPieceId={selectedPieceId}
+            />
+            
+            <PiecesLayer
+              pieces={pieces}
+              size={boardSize}
+              boardOrientation={boardOrientation}
+            />
+            
+            <GameInteractionLayer
+              game={game}
+              pieces={pieces}
+              size={boardSize}
+              onPieceSelect={handlePieceSelect}
+              onMoveSelect={handleMoveSelect}
+              boardOrientation={boardOrientation}
+              currentTurn={currentTurn}
+            />
+          </svg>
+        </div>
       </div>
     </Stack>
   );
