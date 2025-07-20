@@ -35,27 +35,16 @@ export function ChessGame({
         hexDict[`${q}${r}`] = createHex(q, r, s);
       }
     }
-    
-    const hexagons = Object.values(hexDict);
-    
+        
     const totalHexagonHeight = height - 40;
     const hexagonHeight = totalHexagonHeight / 12;
     const size = hexagonHeight / Math.sqrt(3);
     
-    let minX = hexDict['-73'].getCoordinates(size).x;
-    let maxX = hexDict['7-4'].getCoordinates(size).x;
-    let minY = hexDict['-4-4'].getCoordinates(size).y;
-    let maxY = hexDict['-47'].getCoordinates(size).y;
-    
-    hexagons.forEach((hex: any) => {
-      const { x, y } = hex.getCoordinates(size);
-      
-      const hexRadius = size;
-      minX = Math.min(minX, x - hexRadius);
-      maxX = Math.max(maxX, x + hexRadius);
-      minY = Math.min(minY, y - hexRadius);
-      maxY = Math.max(maxY, y + hexRadius);
-    });
+    // Calculate bounds
+    let minX = hexDict['-73'].getCoordinates(size).x - size;
+    let maxX = hexDict['7-4'].getCoordinates(size).x + size;
+    let minY = hexDict['-4-4'].getCoordinates(size).y - size;
+    let maxY = hexDict['-47'].getCoordinates(size).y + size;
     
     const boardWidth = maxX - minX + size * 2;
     const boardHeight = maxY - minY + size * 2;
