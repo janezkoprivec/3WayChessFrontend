@@ -19,7 +19,7 @@ export function Hexagon({
   size, 
   showCoordinates = false, 
   fillColor, 
-  strokeColor = "#8b4513", 
+  strokeColor, 
   strokeWidth = 1 
 }: HexagonProps) {
   const { x, y, points } = useMemo(() => {

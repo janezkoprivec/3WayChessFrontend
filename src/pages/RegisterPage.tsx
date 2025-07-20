@@ -100,6 +100,23 @@ export function RegisterPage() {
             </Button>
           </Group>
         </Paper>
+
+        <Paper p="md" withBorder>
+          <Stack gap="md" align="center">
+            <Text size="sm" c="dimmed" ta="center">
+              Want to try the game first?
+            </Text>
+            <Button 
+              component={Link} 
+              to="/offline-game" 
+              variant="outline" 
+              size="md"
+              fullWidth
+            >
+              Play Offline Game
+            </Button>
+          </Stack>
+        </Paper>
       </Stack>
     </Container>
   );

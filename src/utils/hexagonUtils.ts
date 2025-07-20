@@ -33,13 +33,13 @@ export function getHexColor(q: number, r: number, s: number): string {
   
   switch (normalizedIndex) {
     case 0:
-      return '#FFFFFF';
+      return '#E0E0E0'; 
     case 1:
-      return '#808080';
+      return '#A0A0A0'; 
     case 2:
-      return '#000000';
+      return '#606060'; 
     default:
-      return '#FFFFFF';
+      return '#E0E0E0';
   }
 }
 
