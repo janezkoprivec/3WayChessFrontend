@@ -7,6 +7,8 @@ export interface Hex {
   getColor(): string;
 }
 
+export type BoardOrientation = 'white' | 'black' | 'grey';
+
 export function createHex(q: number, r: number, s: number): Hex {
   return {
     q,
@@ -64,4 +66,22 @@ export function getHexPoints(centerX: number, centerY: number, size: number): st
     points.push(`${x},${y}`);
   }
   return points.join(' ');
+}
+
+export function transformCoordinates(
+  q: number, 
+  r: number, 
+  s: number, 
+  orientation: BoardOrientation
+): { q: number; r: number; s: number } {
+  switch (orientation) {
+    case 'white':
+      return { q, r, s };
+    case 'black':
+      return { q: s, r: q, s: r };
+    case 'grey':
+      return { q: r, r: s, s: q };
+    default:
+      return { q, r, s };
+  }
 } 

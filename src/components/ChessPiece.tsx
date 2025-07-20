@@ -2,6 +2,8 @@ import { useMemo } from 'react';
 import { hexToPixel } from '../utils/hexagonUtils';
 import { Piece, Color } from '../../web/tri-hex-chess';
 
+type BoardOrientation = 'white' | 'black' | 'grey';
+
 interface ChessPieceProps {
   piece: Piece;
   color: Color;
@@ -9,6 +11,7 @@ interface ChessPieceProps {
   r: number;
   size: number; 
   onClick?: () => void;
+  boardOrientation?: BoardOrientation;
 }
 
 export function ChessPiece({ 
@@ -17,7 +20,8 @@ export function ChessPiece({
   q, 
   r, 
   size, 
-  onClick 
+  onClick,
+  boardOrientation = 'white'
 }: ChessPieceProps) {
 
   const getColorName = (color: Color): string => {
@@ -50,8 +54,7 @@ export function ChessPiece({
     const iconPath = `/pieces/${colorName}/${colorName}-${pieceName}.svg`;
     
     return { x, y, pieceSize, iconPath };
-  }, [q, r, size, piece, color]);
-
+  }, [q, r, size, piece, color, boardOrientation]);
 
   return (
     <g onClick={onClick} style={{ cursor: onClick ? 'pointer' : 'default' }}>

@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { ChessPiece } from './ChessPiece';
 import { ChessPiece as GamePiece } from '../../web/tri-hex-chess';
-import { hexToPixel } from '../utils/hexagonUtils';
+import { hexToPixel, transformCoordinates, BoardOrientation } from '../utils/hexagonUtils';
 
 export interface Move {
   pieceId: string;
@@ -17,6 +17,7 @@ interface PiecesLayerProps {
   onPieceMove?: (move: Move) => void;
   onPieceClick?: (piece: GamePiece) => void;
   selectedPieceId?: string;
+  boardOrientation?: BoardOrientation;
 }
 
 export function PiecesLayer({ 
@@ -24,7 +25,8 @@ export function PiecesLayer({
   size, 
   onPieceMove, 
   onPieceClick,
-  selectedPieceId 
+  selectedPieceId,
+  boardOrientation = 'white'
 }: PiecesLayerProps) {
   const handlePieceClick = useCallback((piece: GamePiece) => {
     if (onPieceClick) {
@@ -40,15 +42,23 @@ export function PiecesLayer({
     <g id="pieces-layer">
       {pieces.map((piece, index) => {
         const pieceId = getPieceId(piece);
+        const transformedCoords = transformCoordinates(
+          piece.coordinates.q, 
+          piece.coordinates.r, 
+          piece.coordinates.s, 
+          boardOrientation
+        );
+        
         return (
           <ChessPiece
             key={`${pieceId}-${index}`}
             piece={piece.piece}
             color={piece.player}
-            q={piece.coordinates.q}
-            r={piece.coordinates.r}
+            q={transformedCoords.q}
+            r={transformedCoords.r}
             size={size}
             onClick={() => handlePieceClick(piece)}
+            boardOrientation={boardOrientation}
           />
         );
       })}
@@ -58,9 +68,16 @@ export function PiecesLayer({
           const selectedPiece = pieces.find(p => getPieceId(p) === selectedPieceId);
           if (!selectedPiece) return null;
           
-          const { x, y } = hexToPixel(
+          const transformedCoords = transformCoordinates(
             selectedPiece.coordinates.q, 
-            selectedPiece.coordinates.r, 
+            selectedPiece.coordinates.r,
+            selectedPiece.coordinates.s,
+            boardOrientation
+          );
+          
+          const { x, y } = hexToPixel(
+            transformedCoords.q, 
+            transformedCoords.r, 
             size
           );
           

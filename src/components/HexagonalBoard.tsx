@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { createHex, Hex } from '../utils/hexagonUtils';
+import { createHex, Hex, transformCoordinates, BoardOrientation } from '../utils/hexagonUtils';
 import { Hexagon } from './Hexagon';
 
 export interface BoardDimensions {
@@ -14,11 +14,13 @@ export interface BoardDimensions {
 interface HexagonalBoardProps {
   height: number; 
   showCoordinates?: boolean;
+  boardOrientation?: BoardOrientation;
 }
 
 export function HexagonalBoard({ 
   height, 
-  showCoordinates = false
+  showCoordinates = false,
+  boardOrientation = 'white'
 }: HexagonalBoardProps) {
   const { hexagons, size } = useMemo(() => {
     const hexDict: Record<string, Hex> = {};
@@ -51,19 +53,23 @@ export function HexagonalBoard({
 
   return (
     <g id="board-layer">
-      {hexagons.map((hex) => (
-        <Hexagon
-          key={`${hex.q}${hex.r}`}
-          q={hex.q}
-          r={hex.r}
-          s={hex.s}
-          size={size}
-          showCoordinates={showCoordinates}
-          fillColor={hex.getColor()}
-          strokeColor="#000000"
-          strokeWidth={1}
-        />
-      ))}
+      {hexagons.map((hex) => {
+        const transformedCoords = transformCoordinates(hex.q, hex.r, hex.s, boardOrientation);
+        
+        return (
+          <Hexagon
+            key={`${hex.q}${hex.r}`}
+            q={transformedCoords.q}
+            r={transformedCoords.r}
+            s={transformedCoords.s}
+            size={size}
+            showCoordinates={showCoordinates}
+            fillColor={hex.getColor()}
+            strokeColor="#000000"
+            strokeWidth={1}
+          />
+        );
+      })}
     </g>
   );
 } 

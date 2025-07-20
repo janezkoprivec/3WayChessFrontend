@@ -1,8 +1,9 @@
-import { useState, useMemo, useEffect } from 'react';
-import { HexagonalBoard } from './HexagonalBoard';
+import { useState, useMemo, useEffect, useCallback } from 'react';
+import { HexagonalBoard, BoardDimensions } from './HexagonalBoard';
 import { PiecesLayer, Move } from './PiecesLayer';
-import { Game, ChessPiece as GamePiece } from '../../web/tri-hex-chess';
-import { createHex } from '../utils/hexagonUtils';
+import { Game, ChessPiece as GamePiece, Color } from '../../web/tri-hex-chess';
+import { createHex, BoardOrientation } from '../utils/hexagonUtils';
+import { Button, Group, Stack, Text } from '@mantine/core';
 
 interface ChessGameProps {
   height: number;
@@ -18,6 +19,7 @@ export function ChessGame({
   const [selectedPieceId, setSelectedPieceId] = useState<string | undefined>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [boardOrientation, setBoardOrientation] = useState<BoardOrientation>('white');
 
   const { boardSize, boardDimensions } = useMemo(() => {
     const hexDict: Record<string, any> = {};
@@ -35,16 +37,15 @@ export function ChessGame({
         hexDict[`${q}${r}`] = createHex(q, r, s);
       }
     }
-        
+    
     const totalHexagonHeight = height - 40;
     const hexagonHeight = totalHexagonHeight / 12;
     const size = hexagonHeight / Math.sqrt(3);
     
-    // Calculate bounds
     let minX = hexDict['-73'].getCoordinates(size).x - size;
     let maxX = hexDict['7-4'].getCoordinates(size).x + size;
-    let minY = hexDict['-4-4'].getCoordinates(size).y - size;
-    let maxY = hexDict['-47'].getCoordinates(size).y + size;
+    let minY = hexDict['-47'].getCoordinates(size).y - size;
+    let maxY = hexDict['-4-4'].getCoordinates(size).y + size;
     
     const boardWidth = maxX - minX + size * 2;
     const boardHeight = maxY - minY + size * 2;
@@ -87,22 +88,25 @@ export function ChessGame({
 
   const handlePieceClick = (piece: GamePiece) => {
     const pieceId = `${piece.player}-${piece.piece}-${piece.coordinates.q}-${piece.coordinates.r}`;
+    
     console.log('Piece clicked:', pieceId);
 
+    const legalMoves = game?.queryMoves(piece.coordinates);
+    console.log('Legal moves:', legalMoves);
 
     if (selectedPieceId === pieceId) {
-      // Deselect if clicking the same piece
       setSelectedPieceId(undefined);
     } else {
-      // Select the piece
       setSelectedPieceId(pieceId);
     }
   };
 
   const handlePieceMove = (move: Move) => {
     console.log('Piece moved:', move);
+  };
 
-  
+  const handleOrientationChange = (orientation: BoardOrientation) => {
+    setBoardOrientation(orientation);
   };
 
   if (isLoading) {
@@ -135,35 +139,64 @@ export function ChessGame({
   }
 
   return (
-    <div style={{ 
-      display: 'flex', 
-      justifyContent: 'center',
-      alignItems: 'center',
-      position: 'relative'
-    }}>
-      <svg
-        width={boardDimensions.width}
-        height={height}
-        viewBox={`${boardDimensions.minX} ${boardDimensions.minY} ${boardDimensions.width} ${boardDimensions.height}`}
-        style={{ 
-          border: '1px solid #ccc',
-          maxWidth: '100%',
-          height: 'auto'
-        }}
-      >
-        <HexagonalBoard 
+    <Stack gap="md" align="center">
+      <Group>
+        <Text size="sm" fw={500}>Board Orientation:</Text>
+        <Button 
+          size="xs" 
+          variant={boardOrientation === 'white' ? 'filled' : 'outline'}
+          onClick={() => handleOrientationChange('white')}
+        >
+          White
+        </Button>
+        <Button 
+          size="xs" 
+          variant={boardOrientation === 'black' ? 'filled' : 'outline'}
+          onClick={() => handleOrientationChange('black')}
+        >
+          Black
+        </Button>
+        <Button 
+          size="xs" 
+          variant={boardOrientation === 'grey' ? 'filled' : 'outline'}
+          onClick={() => handleOrientationChange('grey')}
+        >
+          Grey
+        </Button>
+      </Group>
+
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'relative'
+      }}>
+        <svg
+          width={boardDimensions.width}
           height={height}
-          showCoordinates={showCoordinates}
-        />
-        
-        <PiecesLayer
-          pieces={pieces}
-          size={boardSize}
-          onPieceMove={handlePieceMove}
-          onPieceClick={handlePieceClick}
-          selectedPieceId={selectedPieceId}
-        />
-      </svg>
-    </div>
+          viewBox={`${boardDimensions.minX} ${boardDimensions.minY} ${boardDimensions.width} ${boardDimensions.height}`}
+          style={{ 
+            border: '1px solid #ccc',
+            maxWidth: '100%',
+            height: 'auto'
+          }}
+        >
+          <HexagonalBoard 
+            height={height}
+            showCoordinates={showCoordinates}
+            boardOrientation={boardOrientation}
+          />
+          
+          <PiecesLayer
+            pieces={pieces}
+            size={boardSize}
+            onPieceMove={handlePieceMove}
+            onPieceClick={handlePieceClick}
+            selectedPieceId={selectedPieceId}
+            boardOrientation={boardOrientation}
+          />
+        </svg>
+      </div>
+    </Stack>
   );
 } 
