@@ -4,6 +4,8 @@ import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { OfflineGamePage } from './pages/OfflineGamePage';
+import { GamesPage } from './pages/GamesPage';
+import { GamePage } from './pages/GamePage';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
 export const routes: RouteObject[] = [
@@ -12,6 +14,14 @@ export const routes: RouteObject[] = [
     element: (
       <ProtectedRoute>
         <HomePage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/games',
+    element: (
+      <ProtectedRoute>
+        <GamesPage />
       </ProtectedRoute>
     ),
   },

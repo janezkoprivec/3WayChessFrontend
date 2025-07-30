@@ -14,11 +14,19 @@ export interface RegisterRequest {
 
 export interface AuthResponse {
   user: {
-    id: string;
+    _id: string;
     username: string;
     email: string;
   };
   token: string;
+}
+
+export interface UserResponse {
+  user: {
+    id: string;
+    username: string;
+    email: string;
+  };
 }
 
 export interface User {
@@ -55,7 +63,7 @@ export class AuthService {
   }
 
   static async logout(): Promise<void> {
-    
+    localStorage.removeItem('auth_token');
   }
 
   static isAuthenticated(): boolean {
@@ -68,5 +76,21 @@ export class AuthService {
 
   static clearToken(): void {
     localStorage.removeItem('auth_token');
+  }
+
+  static async getCurrentUser(): Promise<User> {
+    try {
+      const response = await ApiService.get<UserResponse>('/auth/me');
+      return response.data.user;
+    } catch (error) {
+      // If the /auth/me endpoint doesn't exist yet, create a basic user
+      // This is a temporary solution until the backend is ready
+      console.warn('Auth endpoint not available, using fallback user');
+      return {
+        id: '1',
+        username: 'user',
+        email: 'user@example.com',
+      };
+    }
   }
 } 

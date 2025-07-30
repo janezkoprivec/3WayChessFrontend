@@ -33,6 +33,7 @@ export function Layout({ children }: LayoutProps) {
           <Group>
             {user ? (
               <>
+                <Button component={Link} to="/games" variant="subtle">Games</Button>
                 <Button component={Link} to="/" variant="subtle">Home</Button>
                 <Text size="sm" c="dimmed">Welcome, {user.username}</Text>
                 <Button variant="subtle" onClick={logout}>Logout</Button>

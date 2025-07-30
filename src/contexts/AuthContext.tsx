@@ -25,7 +25,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const initializeAuth = async () => {
       if (AuthService.isAuthenticated()) {
         try {
-          // TODO: Dobi trenutnega uporabnika
+          const user = await AuthService.getCurrentUser();
+          setUser(user);
         } catch (error) {
           console.error('Failed to get current user:', error);
           AuthService.clearToken();
@@ -41,7 +42,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setIsLoading(true);
     try {
       const response = await AuthService.login({ username, password });
-      setUser(response.user);
+      console.log('Login successful:', response);
+      setUser({
+        id: response.user._id,
+        username: response.user.username,
+        email: response.user.email,
+      });
     } catch (error) {
       console.error('Login failed:', error);
       throw error;
@@ -54,7 +60,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setIsLoading(true);
     try {
       const response = await AuthService.register({ username, email, password });
-      setUser(response.user);
+      setUser({
+        id: response.user._id,
+        username: response.user.username,
+        email: response.user.email,
+      });
     } catch (error) {
       console.error('Registration failed:', error);
       throw error;
