@@ -26,6 +26,14 @@ export const routes: RouteObject[] = [
     ),
   },
   {
+    path: '/game/:id',
+    element: (
+      <ProtectedRoute>
+        <GamePage />
+      </ProtectedRoute>
+    ),
+  },
+  {
     path: '/offline-game',
     element: <OfflineGamePage />,
   },

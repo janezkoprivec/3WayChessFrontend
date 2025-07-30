@@ -26,6 +26,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (AuthService.isAuthenticated()) {
         try {
           const user = await AuthService.getCurrentUser();
+          console.log('User set in context:', user);
           setUser(user);
         } catch (error) {
           console.error('Failed to get current user:', error);

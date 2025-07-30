@@ -23,7 +23,7 @@ export interface AuthResponse {
 
 export interface UserResponse {
   user: {
-    id: string;
+    _id: string;
     username: string;
     email: string;
   };
@@ -81,7 +81,11 @@ export class AuthService {
   static async getCurrentUser(): Promise<User> {
     try {
       const response = await ApiService.get<UserResponse>('/auth/me');
-      return response.data.user;
+      return {
+        id: response.data.user._id, 
+        username: response.data.user.username,
+        email: response.data.user.email,
+      };
     } catch (error) {
       // If the /auth/me endpoint doesn't exist yet, create a basic user
       // This is a temporary solution until the backend is ready
