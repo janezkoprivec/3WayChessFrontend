@@ -49,7 +49,7 @@ export function GameListItem({ game }: GameListItemProps) {
             Time: {formatTimeControl(game.timeControl)}
           </Text>
           <Text size="sm">
-            Players: {game.players.length}/2
+            Players: {game.players.length}/3
           </Text>
         </Group>
 
