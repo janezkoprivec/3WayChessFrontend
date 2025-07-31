@@ -4,6 +4,31 @@ export interface TimeControl {
   increment: number;
 }
 
+export interface IUserLean {
+  _id: string;
+  email: string;
+  username: string;
+  profilePictureUrl: string;
+}
+
+export interface IGameLean {
+  id: string;
+  name: string;
+  status: "active" | "waiting" | "finished";
+  players: [{
+    user: IUserLean;
+    color: string;
+  }];
+  createdBy: IUserLean;
+  timeControl: IGameTimeControl;
+}
+
+export interface IGameTimeControl {
+  type: 'blitz' | 'rapid' | 'classical';
+  initialTime: number;
+  increment: number;
+}
+
 export interface Game {
   id: string;
   name: string;
