@@ -5,25 +5,36 @@ import { GameInteractionLayer } from './GameInteractionLayer';
 import { Game, ChessPiece as GamePiece, Move } from '../../web/tri-hex-chess';
 import { createHex, BoardOrientation } from '../utils/hexagonUtils';
 import { encodePieceId } from '../utils/pieceIdUtils';
-import { Button, Group, Stack, Text } from '@mantine/core';
+import { Group, Stack, Text } from '@mantine/core';
 import { useCurrentTurn } from '../hooks/useCurrentTurn';
+import { Socket } from 'socket.io-client';
 
-interface ChessGameProps {
+interface OnlineChessGameProps {
   height: number;
   showCoordinates?: boolean;
+  playerColor: string;
+  gameSocket: Socket | null;
+  currentTurn: string;
+  isMyTurn: boolean;
+  onMoveReceived?: (move: Move) => void;
 }
 
-export function ChessGame({ 
+export function OnlineChessGame({ 
   height, 
-  showCoordinates = false
-}: ChessGameProps) {
+  showCoordinates = false,
+  playerColor,
+  gameSocket,
+  currentTurn,
+  isMyTurn,
+  onMoveReceived
+}: OnlineChessGameProps) {
   const [game, setGame] = useState<Game | null>(null);
   const [pieces, setPieces] = useState<GamePiece[]>([]);
   const [selectedPiece, setSelectedPiece] = useState<GamePiece | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [boardOrientation, setBoardOrientation] = useState<BoardOrientation>('white');
-  const { currentTurn, updateTurn } = useCurrentTurn(game);
+  const { currentTurn: gameCurrentTurn, updateTurn } = useCurrentTurn(game);
 
   const selectedPieceId = useMemo(() => {
     return selectedPiece ? encodePieceId(selectedPiece.player, selectedPiece.piece, selectedPiece.coordinates.q, selectedPiece.coordinates.r) : undefined;
@@ -94,21 +105,83 @@ export function ChessGame({
     initializeGame();
   }, []);
 
+  useEffect(() => {
+    if (!gameSocket) return;
+
+    const handleMoveReceived = (moveData: any) => {
+      if (!game) return;
+      
+      try {
+        const pieces = game.getPieces();
+        const fromPiece = pieces.find(piece => 
+          piece.coordinates.q === moveData.from.q && 
+          piece.coordinates.r === moveData.from.r
+        );
+        
+        if (!fromPiece) {
+          console.error('No piece found at from coordinates');
+          return;
+        }
+        
+        const legalMoves = game.queryMoves(fromPiece.coordinates);
+        const matchingMove = legalMoves.find(move => 
+          move.to.q === moveData.to.q && 
+          move.to.r === moveData.to.r && 
+          move.move_type === moveData.move_type &&
+          move.color === moveData.color &&
+          move.piece === moveData.piece
+        );
+        
+        if (matchingMove) {
+          game.commitMove(matchingMove, null, true);
+          setPieces(game.getPieces());
+          updateTurn();
+          
+          if (onMoveReceived) {
+            onMoveReceived(matchingMove);
+          }
+        } else {
+          console.error('Received move does not match any legal moves');
+        }
+      } catch (err) {
+        console.error('Failed to process received move:', err);
+      }
+    };
+
+    gameSocket.on('move', handleMoveReceived);
+
+    return () => {
+      gameSocket.off('move', handleMoveReceived);
+    };
+  }, [gameSocket, game, onMoveReceived, updateTurn]);
+
+  useEffect(() => {
+    setBoardOrientation(playerColor as BoardOrientation);
+  }, [playerColor]);
+
   const handlePieceSelect = (piece: GamePiece | null) => {
+    if (!isMyTurn) return;
     setSelectedPiece(piece);
   };
 
   const handleMoveSelect = (move: Move) => {
-    if (!game || !selectedPiece) return;
+    if (!game || !selectedPiece || !isMyTurn || !gameSocket) return;
         
     game.commitMove(move, null, true);
     setPieces(game.getPieces());
     
     updateTurn();
     
+    gameSocket.emit('move', {
+      from: move.from,
+      to: move.to,
+      move_type: move.move_type,
+      color: move.color,
+      piece: move.piece
+    });
+    
     setSelectedPiece(null);
   };
-
 
   const handleOrientationChange = (orientation: BoardOrientation) => {
     setBoardOrientation(orientation);
@@ -145,29 +218,12 @@ export function ChessGame({
 
   return (
     <Stack gap="md" align="center">
+
       <Group>
-        <Text size="sm" fw={500}>Board Orientation:</Text>
-        <Button 
-          size="xs" 
-          variant={boardOrientation === 'white' ? 'filled' : 'outline'}
-          onClick={() => handleOrientationChange('white')}
-        >
-          White
-        </Button>
-        <Button 
-          size="xs" 
-          variant={boardOrientation === 'black' ? 'filled' : 'outline'}
-          onClick={() => handleOrientationChange('black')}
-        >
-          Black
-        </Button>
-        <Button 
-          size="xs" 
-          variant={boardOrientation === 'grey' ? 'filled' : 'outline'}
-          onClick={() => handleOrientationChange('grey')}
-        >
-          Grey
-        </Button>
+        <Text size="sm" fw={500}>Current Turn: {currentTurn}</Text>
+        <Text size="sm" c={isMyTurn ? 'green' : 'red'}>
+          {isMyTurn ? 'Your turn' : 'Opponent\'s turn'}
+        </Text>
       </Group>
 
       <div style={{ 
@@ -182,7 +238,6 @@ export function ChessGame({
             height={height}
             viewBox={`${boardDimensions.minX} ${boardDimensions.minY} ${boardDimensions.width} ${boardDimensions.height}`}
             style={{ 
-              border: '1px solid #ccc',
               maxWidth: '100%',
               height: 'auto'
             }}
@@ -207,8 +262,8 @@ export function ChessGame({
               onPieceSelect={handlePieceSelect}
               onMoveSelect={handleMoveSelect}
               boardOrientation={boardOrientation}
-              currentTurn={currentTurn}
-              isMyTurn={true}
+              currentTurn={gameCurrentTurn}
+              isMyTurn={isMyTurn}
             />
           </svg>
         </div>

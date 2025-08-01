@@ -11,6 +11,7 @@ interface GameInteractionLayerProps {
   onMoveSelect?: (move: Move) => void;
   boardOrientation?: BoardOrientation;
   currentTurn: Color;
+  isMyTurn: boolean;
 }
 
 export function GameInteractionLayer({
@@ -20,7 +21,8 @@ export function GameInteractionLayer({
   onPieceSelect,
   onMoveSelect,
   boardOrientation = 'white',
-  currentTurn
+  currentTurn,
+  isMyTurn
 }: GameInteractionLayerProps) {
 
   const [selectedPiece, setSelectedPiece] = useState<GamePiece | null>(null);
@@ -38,7 +40,7 @@ export function GameInteractionLayer({
   }, [selectedPiece]);
 
   const handlePieceClick = useCallback((piece: GamePiece | null) => {
-    if (!game || !piece) return;
+    if (!game || !piece || !isMyTurn) return;
     
     const pieceId = encodePieceId(piece.player, piece.piece, piece.coordinates.q, piece.coordinates.r);
 
@@ -53,19 +55,20 @@ export function GameInteractionLayer({
       setSelectedPiece(piece);
       onPieceSelect?.(piece);
     }
-  }, [game, selectedPieceId, currentTurn, onPieceSelect]);
+  }, [game, selectedPieceId, currentTurn, onPieceSelect, isMyTurn]);
 
   const handleMoveClick = useCallback((move: Move) => {
+    if (!isMyTurn) return;
     setSelectedPiece(null);
     onMoveSelect?.(move);
-  }, [onMoveSelect]);
+  }, [onMoveSelect, isMyTurn]);
 
   const getPieceId = (piece: GamePiece): string => {
     return encodePieceId(piece.player, piece.piece, piece.coordinates.q, piece.coordinates.r);
   };
 
   const isPieceClickable = (piece: GamePiece): boolean => {
-    return piece.player === currentTurn;
+    return piece.player === currentTurn && isMyTurn;
   };
 
   return (
@@ -109,7 +112,7 @@ export function GameInteractionLayer({
         const { x, y } = hexToPixel(transformedCoords.q, transformedCoords.r, size);
         
         const isCapture = move.move_type === 2 || move.move_type === 6;
-        const clickRadius = size * 0.5;
+        const clickRadius = size * 0.6;
         const visualRadius = isCapture ? size * 0.5 : size * 0.15;
         
         return (

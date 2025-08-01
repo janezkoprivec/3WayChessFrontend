@@ -6,6 +6,28 @@ import { IGameLean, IUserLean } from '../types/game';
 import { API_CONFIG } from '../config/api';
 import { useAuth } from '../contexts/AuthContext';
 import { GameWaitingDialog } from '../components/GameWaitingDialog';
+import { OnlineChessGame } from '../components/OnlineChessGame';
+
+const useWindowSize = () => {
+  const [windowSize, setWindowSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return windowSize;
+};
 
 export function GamePage() {
   const { id } = useParams();
@@ -13,6 +35,7 @@ export function GamePage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const selectedColor = searchParams.get('color') || 'random';
+  const { height: windowHeight } = useWindowSize();
   
   const [game, setGame] = useState<IGameLean | null>(null);
   const [gameSocket, setGameSocket] = useState<Socket | null>(null);
@@ -20,6 +43,7 @@ export function GamePage() {
   const [connectionError, setConnectionError] = useState<string | null>(null);
   const [showWaitingDialog, setShowWaitingDialog] = useState(false);
   const [hasJoined, setHasJoined] = useState(false);
+  const [currentTurn, setCurrentTurn] = useState<string>('white');
 
   const setUpSocket = () => {
     if (!id) return;
@@ -59,6 +83,11 @@ export function GamePage() {
       } else if (updatedGame.status === 'waiting') {
         setShowWaitingDialog(true);
       }
+    });
+
+    socket.on('turn-updated', (turnData: { currentTurn: string }) => {
+      console.log('Turn updated:', turnData);
+      setCurrentTurn(turnData.currentTurn);
     });
 
     socket.on('error', (error: any) => {
@@ -108,69 +137,19 @@ export function GamePage() {
     }
   };
 
-  const getTimeControlText = (timeControl: any) => {
-    return `${timeControl.type} - ${timeControl.initialTime}min + ${timeControl.increment}s`;
-  };
-
   return (
     <Container size="lg" py="xl">
-      <Stack gap="lg">
-        <Title order={2}>Game {id}</Title>
-        
-        {connectionError && (
-          <Text c="red">Connection error: {connectionError}</Text>
-        )}
-        
-        {game ? (
-          <>
-            <Stack gap="md">
-              <Group justify="space-between">
-                <Title order={3}>{game.name}</Title>
-                <Badge color={getStatusColor(game.status)} size="lg">
-                  {game.status.toUpperCase()}
-                </Badge>
-              </Group>
-              
-              <Text>Time Control: {getTimeControlText(game.timeControl)}</Text>
-              
-              <Stack gap="sm">
-                <Title order={4}>Players</Title>
-                {game.players.map((player, index) => (
-                  <Group key={index} gap="sm">
-                    <Avatar 
-                      src={player.user.profilePictureUrl} 
-                      alt={player.user.username}
-                      size="md"
-                    />
-                    <Stack gap={0}>
-                      <Text fw={500}>{player.user.username}</Text>
-                      <Text size="sm" c="dimmed">{player.color}</Text>
-                    </Stack>
-                  </Group>
-                ))}
-              </Stack>
-              
-              <Stack gap="sm">
-                <Title order={4}>Created by</Title>
-                <Group gap="sm">
-                  <Avatar 
-                    src={game.createdBy.profilePictureUrl} 
-                    alt={game.createdBy.username}
-                    size="md"
-                  />
-                  <Text fw={500}>{game.createdBy.username}</Text>
-                </Group>
-              </Stack>
-            </Stack>
-          </>
-        ) : (
-          <Text>Loading game information...</Text>
-        )}
-        
-        <Button onClick={() => navigate('/games')} variant="outline">
-          Back to Games
-        </Button>
-      </Stack>
+
+      {game && game.status === 'active' && (
+        <OnlineChessGame
+          height={windowHeight - 200}
+          showCoordinates={false}
+          playerColor={selectedColor}
+          gameSocket={gameSocket}
+          currentTurn={currentTurn}
+          isMyTurn={currentTurn === selectedColor}
+        />
+      )}
 
       <GameWaitingDialog 
         opened={showWaitingDialog}

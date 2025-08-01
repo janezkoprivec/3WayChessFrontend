@@ -1,4 +1,4 @@
-import { AppShell, Text, Group, Button, Stack } from '@mantine/core';
+import { AppShell, Text, Group, Button, Container } from '@mantine/core';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -15,7 +15,9 @@ export function Layout({ children }: LayoutProps) {
     return (
       <AppShell padding="md">
         <AppShell.Main>
-          {children || <Outlet />}
+          <Container size="sm" mx="auto">
+            {children || <Outlet />}
+          </Container>
         </AppShell.Main>
       </AppShell>
     );
@@ -24,32 +26,35 @@ export function Layout({ children }: LayoutProps) {
   return (
     <AppShell
       header={{ height: 60 }}
-      navbar={{ width: 300, breakpoint: 'sm' }}
       padding="md"
     >
       <AppShell.Header>
-        <Group h="100%" px="md" justify="space-between">
-          <Text size="lg" fw={700}>3Way Chess</Text>
-          <Group>
-            {user ? (
-              <>
-                <Button component={Link} to="/games" variant="subtle">Games</Button>
-                <Button component={Link} to="/" variant="subtle">Home</Button>
-                <Text size="sm" c="dimmed">Welcome, {user.username}</Text>
-                <Button variant="subtle" onClick={logout}>Logout</Button>
-              </>
-            ) : (
-              <>
-                <Button component={Link} to="/login" variant="subtle">Login</Button>
-                <Button component={Link} to="/register" variant="subtle">Register</Button>
-              </>
-            )}
+        <Container size="lg" h="100%">
+          <Group h="100%" justify="space-between">
+            <Text size="lg" fw={700}>3Way Chess</Text>
+            <Group gap="xs">
+              {user ? (
+                <>
+                  <Button component={Link} to="/games" variant="subtle" size="sm">Games</Button>
+                  <Button component={Link} to="/" variant="subtle" size="sm">Home</Button>
+                  <Text size="sm" c="dimmed">Welcome, {user.username}</Text>
+                  <Button variant="subtle" onClick={logout} size="sm">Logout</Button>
+                </>
+              ) : (
+                <>
+                  <Button component={Link} to="/login" variant="subtle" size="sm">Login</Button>
+                  <Button component={Link} to="/register" variant="subtle" size="sm">Register</Button>
+                </>
+              )}
+            </Group>
           </Group>
-        </Group>
+        </Container>
       </AppShell.Header>
 
       <AppShell.Main>
-        {children || <Outlet />}
+        <Container size="lg" mx="auto">
+          {children || <Outlet />}
+        </Container>
       </AppShell.Main>
     </AppShell>
   );
