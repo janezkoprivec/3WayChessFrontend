@@ -44,6 +44,7 @@ export function GamePage() {
   const [showWaitingDialog, setShowWaitingDialog] = useState(false);
   const [hasJoined, setHasJoined] = useState(false);
   const [currentTurn, setCurrentTurn] = useState<string>('white');
+  const [playerTimes, setPlayerTimes] = useState<Record<string, number>>({});
 
   const setUpSocket = () => {
     if (!id) return;
@@ -85,9 +86,10 @@ export function GamePage() {
       }
     });
 
-    socket.on('turn-updated', (turnData: { currentTurn: string }) => {
+    socket.on('turn-updated', (turnData: { currentTurn: string, playerTimes: Record<string, number>, timeControl: any }) => {
       console.log('Turn updated:', turnData);
       setCurrentTurn(turnData.currentTurn);
+      setPlayerTimes(turnData.playerTimes);
     });
 
     socket.on('error', (error: any) => {
@@ -148,6 +150,8 @@ export function GamePage() {
           gameSocket={gameSocket}
           currentTurn={currentTurn}
           isMyTurn={currentTurn === selectedColor}
+          game={game}
+          playerTimes={playerTimes}
         />
       )}
 
