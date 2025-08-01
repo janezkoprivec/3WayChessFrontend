@@ -24,7 +24,7 @@ export function GameJoinDialog({ game, opened, onClose, onJoin }: GameJoinDialog
     <Modal opened={opened} onClose={onClose} title="Join Game" size="md">
       <Stack gap="md">
         <Text size="sm" c="dimmed">
-          Join "{game.name}" created by {game.createdBy}
+          Join "{game.name}" created by {game.createdBy.username}
         </Text>
 
         <Text size="sm" fw={500}>

@@ -39,17 +39,17 @@ export function CreateGameDialog({ opened, onClose, onCreate }: CreateGameDialog
   const timeControlOptions = {
     bullet: [
       { label: '1+0', time: 60, increment: 0 },
-      { label: '1+1', time: 60, increment: 60 },
-      { label: '2+1', time: 120, increment: 60 },
+      { label: '1+1', time: 60, increment: 1 },
+      { label: '2+1', time: 120, increment: 1 },
     ],
     blitz: [
       { label: '3+0', time: 180, increment: 0 },
-      { label: '3+2', time: 180, increment: 120 },
+      { label: '3+2', time: 180, increment: 2 },
       { label: '5+0', time: 300, increment: 0 },
     ],
     rapid: [
       { label: '10+0', time: 600, increment: 0 },
-      { label: '15+10', time: 900, increment: 600 },
+      { label: '15+10', time: 900, increment: 10 },
       { label: '30+0', time: 1800, increment: 0 },
     ],
   };

@@ -88,6 +88,7 @@ export function GamePage() {
 
     socket.on('turn-updated', (turnData: { currentTurn: string, playerTimes: Record<string, number>, timeControl: any }) => {
       console.log('Turn updated:', turnData);
+      console.log('Updating player times:', turnData.playerTimes);
       setCurrentTurn(turnData.currentTurn);
       setPlayerTimes(turnData.playerTimes);
     });

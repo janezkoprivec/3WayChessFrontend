@@ -32,7 +32,7 @@ export interface IGameTimeControl {
 export interface Game {
   id: string;
   name: string;
-  createdBy: string;
+  createdBy: IUserLean;
   createdAt: string;
   timeControl: TimeControl;
   status: 'waiting' | 'active' | 'finished';

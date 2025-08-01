@@ -125,12 +125,31 @@ export function OnlineChessGame({
     
     const players = game.players;
     const currentPlayer = players.find(p => p.color === playerColor);
-    const otherPlayers = players.filter(p => p.color !== playerColor);
+    
+    if (!currentPlayer) return { topLeft: null, topRight: null, bottom: null };
+    
+    const whitePlayer = players.find(p => p.color === 'white');
+    const blackPlayer = players.find(p => p.color === 'black');
+    const greyPlayer = players.find(p => p.color === 'grey');
+    
+    let topLeft = null;
+    let topRight = null;
+    
+    if (playerColor === 'white') {
+      topLeft = blackPlayer || null;
+      topRight = greyPlayer || null;
+    } else if (playerColor === 'black') {
+      topLeft = greyPlayer || null;
+      topRight = whitePlayer || null;
+    } else if (playerColor === 'grey') {
+      topLeft = whitePlayer || null;
+      topRight = blackPlayer || null;
+    }
     
     return {
-      topLeft: otherPlayers[1] || null,
-      topRight: otherPlayers[0] || null,
-      bottom: currentPlayer || null
+      topLeft,
+      topRight,
+      bottom: currentPlayer
     };
   }, [game, playerColor]);
 
@@ -148,8 +167,6 @@ export function OnlineChessGame({
     playerTimes[playerInfo.topRight?.color || ''] || 0,
     currentTurn === playerInfo.topRight?.color
   );
-
-
 
   useEffect(() => {
     const initializeGame = async () => {

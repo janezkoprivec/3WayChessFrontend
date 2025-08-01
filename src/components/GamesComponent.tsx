@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Container, Title, Stack, Group, Button, ScrollArea, Text } from '@mantine/core';
 import { Manager, Socket } from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
@@ -17,6 +17,8 @@ export function GamesComponent() {
   const [gamesSocket, setGamesSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [connectionError, setConnectionError] = useState<string | null>(null);
+  const lastCreatedGameColorRef = useRef<string>('random');
+
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -42,8 +44,10 @@ export function GamesComponent() {
       setGames(games);
     });
 
-    gamesSocket.on('game-created', (game: Game) => {
-      console.log('Game created:', game);
+    gamesSocket.on('game-created', (game: any) => {
+      if (user) {
+        navigate(`/game/${game._id}?color=${lastCreatedGameColorRef.current}`);
+      }
     });
 
     gamesSocket.on('error', (error: any) => {
@@ -82,6 +86,7 @@ export function GamesComponent() {
     timeControl: TimeControl
   ) => {
     setCreateDialogOpened(false);
+    lastCreatedGameColorRef.current = selectedColor;
     if (user) {
       console.log('User found:', user);
       const createData = { 
