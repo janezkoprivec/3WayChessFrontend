@@ -26,6 +26,7 @@ export interface UserResponse {
     _id: string;
     username: string;
     email: string;
+    profilePictureUrl?: string;
   };
 }
 
@@ -33,6 +34,7 @@ export interface User {
   id: string;
   username: string;
   email: string;
+  profilePictureUrl?: string;
 }
 
 export class AuthService {
@@ -85,6 +87,7 @@ export class AuthService {
         id: response.data.user._id, 
         username: response.data.user.username,
         email: response.data.user.email,
+        profilePictureUrl: response.data.user.profilePictureUrl,
       };
     } catch (error) {
       // If the /auth/me endpoint doesn't exist yet, create a basic user
@@ -94,6 +97,7 @@ export class AuthService {
         id: '1',
         username: 'user',
         email: 'user@example.com',
+        profilePictureUrl: undefined,
       };
     }
   }
