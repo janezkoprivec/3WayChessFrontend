@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Container, Paper, Stack, Text, Avatar, Group, Title, Button, Modal, TextInput } from '@mantine/core';
+import { Container, Paper, Stack, Text, Avatar, Group, Title, Button, Modal, TextInput, Card, Badge } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { AuthService, User } from '../services/authService';
 import { ApiService } from '../services/api';
+import { Game } from '../types/game';
 
 export function ProfilePage() {
   const { user } = useAuth();
@@ -11,6 +13,8 @@ export function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [updating, setUpdating] = useState(false);
+  const [gameHistory, setGameHistory] = useState<Game[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
 
   const form = useForm({
     initialValues: {
@@ -26,6 +30,7 @@ export function ProfilePage() {
       try {
         const userData = await AuthService.getCurrentUser();
         setProfileUser(userData);
+        fetchGameHistory();
       } catch (error) {
         console.error('Failed to fetch user data:', error);
       } finally {
@@ -33,7 +38,29 @@ export function ProfilePage() {
       }
     };
 
+    const fetchGameHistory = async () => {
+      if (!user?.id) return;
+      
+      setLoadingHistory(true);
+      try {
+        const response = await ApiService.get<{ games: any[] }>(`/history/games?playerId=${user?.id}&page=1&limit=10`);
+        const games = response.data.games.map(game => {
+          return {
+            ...game,
+            id: game._id, 
+          }
+        }); 
+
+        setGameHistory(games || []);
+      } catch (error) {
+        console.error('Failed to fetch game history:', error);
+      } finally {
+        setLoadingHistory(false);
+      }
+    };
+
     fetchUserData();
+    
   }, []);
 
   if (loading) {
@@ -69,6 +96,24 @@ export function ProfilePage() {
       .join('')
       .toUpperCase()
       .slice(0, 2);
+  };
+
+  const formatTimeControl = (timeControl: Game['timeControl']) => {
+    const minutes = Math.floor(timeControl.time / 60);
+    return `${minutes}+${timeControl.increment}`;
+  };
+
+  const getStatusColor = (status: Game['status']) => {
+    switch (status) {
+      case 'waiting':
+        return 'blue';
+      case 'active':
+        return 'green';
+      case 'finished':
+        return 'gray';
+      default:
+        return 'gray';
+    }
   };
 
   const handleEditProfilePicture = () => {
@@ -150,6 +195,72 @@ export function ProfilePage() {
             </Stack>
           </Stack>
         </Group>
+      </Paper>
+
+      <Paper p="xl" radius="md" withBorder mt="xl">
+        <Stack gap="md">
+          <Title order={3}>Game History</Title>
+          
+          {loadingHistory ? (
+            <Text>Loading game history...</Text>
+          ) : gameHistory.length > 0 ? (
+            <Stack gap="md">
+              {gameHistory.map((game) => (
+                <Card 
+                  key={game.id} 
+                  shadow="sm" 
+                  padding="md" 
+                  radius="md" 
+                  withBorder
+                  component={Link}
+                  to={`/game-history/${game.id}`}
+                  style={{ textDecoration: 'none', color: 'inherit' }}
+                >
+                  <Stack gap="sm">
+                    <Group justify="space-between" align="flex-start">
+                      <Text fw={500} size="lg" lineClamp={1}>
+                        {game.name}
+                      </Text>
+                      <Badge color={getStatusColor(game.status)} variant="light">
+                        {game.status.toUpperCase()}
+                      </Badge>
+                    </Group>
+
+                    <Group gap="xs" align="center">
+                      <Text size="sm" c="dimmed">
+                        Created by: {game.createdBy.username}
+                      </Text>
+                    </Group>
+
+                    <Group gap="md">
+                      <Text size="sm">
+                        Time: {formatTimeControl(game.timeControl)}
+                      </Text>
+                      <Text size="sm">
+                        Players: {game.players.length}/3
+                      </Text>
+                    </Group>
+
+                    {game.players.length > 0 && (
+                      <Stack gap="xs">
+                        <Text size="sm" fw={500}>Players:</Text>
+                        {game.players.map((player, index) => (
+                          <Group key={index} gap="xs" align="center">
+                            <Text size="sm" c="dimmed">
+                              {player.user.username} ({player.color})
+                            </Text>
+                          </Group>
+                        ))}
+                      </Stack>
+                    )}
+                  </Stack>
+                </Card>
+              ))}
+            </Stack>
+          ) : (
+            <Text c="dimmed">No games found in history.</Text>
+          )}
+        </Stack>
       </Paper>
 
       <Modal 

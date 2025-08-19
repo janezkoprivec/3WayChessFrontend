@@ -6,6 +6,7 @@ import { OfflineGamePage } from './pages/OfflineGamePage';
 import { GamesPage } from './pages/GamesPage';
 import { GamePage } from './pages/GamePage';
 import { ProfilePage } from './pages/ProfilePage';
+import { GameHistoryPage } from './pages/GameHistoryPage';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
 export const routes: RouteObject[] = [
@@ -30,6 +31,14 @@ export const routes: RouteObject[] = [
     element: (
       <ProtectedRoute>
         <ProfilePage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/game-history/:gameId',
+    element: (
+      <ProtectedRoute>
+        <GameHistoryPage />
       </ProtectedRoute>
     ),
   },
