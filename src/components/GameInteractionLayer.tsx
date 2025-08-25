@@ -30,8 +30,6 @@ export function GameInteractionLayer({
   const legalMoves = useMemo(() => {
     if (!game || !selectedPiece) return [];
 
-    console.log('selected piece CHANGED')
-
     return game.queryMoves(selectedPiece.coordinates);
   }, [selectedPiece]);
 

@@ -35,7 +35,6 @@ export function GameHistoryPage() {
       setLoading(true);
       try {
         const response = await ApiService.get<GameMovesResponse>(`/history/games/${gameId}/moves`);
-        console.log('Game moves response:', response);
         setGameData(response.data);
       } catch (error) {
         console.error('Failed to fetch game moves:', error);

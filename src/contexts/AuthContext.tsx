@@ -26,7 +26,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (AuthService.isAuthenticated()) {
         try {
           const user = await AuthService.getCurrentUser();
-          console.log('User set in context:', user);
           setUser(user);
         } catch (error) {
           console.error('Failed to get current user:', error);
@@ -43,7 +42,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setIsLoading(true);
     try {
       const response = await AuthService.login({ username, password });
-      console.log('Login successful:', response);
       setUser({
         id: response.user._id,
         username: response.user.username,

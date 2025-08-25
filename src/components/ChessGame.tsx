@@ -123,19 +123,15 @@ export function ChessGame({
     if (!game || !isReplayMode) return;
 
     const replayMoves = async () => {
-      try {
-        console.log('Starting move replay, current index:', currentMoveIndex, 'total moves:', moves.length);
-        
+      try {        
         const newGame = Game.newDefault();
         setGame(newGame);
         
         for (let i = 0; i <= currentMoveIndex && i < moves.length; i++) {
           const moveData = moves[i];
-          console.log(`Replaying move ${i + 1}/${moves.length}:`, moveData);
           
           const move = createMoveFromApiData(moveData, newGame);
           if (move) {
-            console.log(`Successfully applying move ${i + 1}`);
             newGame.commitMove(move, null, true);
           } else {
             console.error(`Failed to create move for move ${i + 1}`);
@@ -143,7 +139,6 @@ export function ChessGame({
         }
         
         const finalPieces = newGame.getPieces();
-        console.log('Final pieces after replay:', finalPieces.length);
         setPieces(finalPieces);
       } catch (err) {
         console.error('Failed to replay moves:', err);
