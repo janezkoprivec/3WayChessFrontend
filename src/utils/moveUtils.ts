@@ -1,4 +1,4 @@
-import { Move, Color, Piece, MoveType } from '../../web/tri-hex-chess';
+import { Move } from '../../web/tri-hex-chess';
 
 export interface ApiMove {
   from: {

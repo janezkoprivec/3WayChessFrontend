@@ -47,8 +47,8 @@ export function ChessGame({
   const [boardOrientation, setBoardOrientation] = useState<BoardOrientation>('white');
   const { currentTurn, updateTurn } = useCurrentTurn(game);
 
-  // Use external board orientation if provided, otherwise use internal state
   const currentBoardOrientation = externalBoardOrientation || boardOrientation;
+  setBoardOrientation('white')
 
   const selectedPieceId = useMemo(() => {
     return selectedPiece ? encodePieceId(selectedPiece.player, selectedPiece.piece, selectedPiece.coordinates.q, selectedPiece.coordinates.r) : undefined;

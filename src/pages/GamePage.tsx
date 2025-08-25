@@ -1,8 +1,8 @@
-import { Container, Title, Text, Stack, Button, Group, Avatar, Badge } from '@mantine/core';
+import { Container } from '@mantine/core';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Manager, Socket } from 'socket.io-client';
-import { IGameLean, IUserLean } from '../types/game';
+import { IGameLean } from '../types/game';
 import { API_CONFIG } from '../config/api';
 import { useAuth } from '../contexts/AuthContext';
 import { GameWaitingDialog } from '../components/GameWaitingDialog';
@@ -39,8 +39,8 @@ export function GamePage() {
   
   const [game, setGame] = useState<IGameLean | null>(null);
   const [gameSocket, setGameSocket] = useState<Socket | null>(null);
-  const [isConnected, setIsConnected] = useState(false);
-  const [connectionError, setConnectionError] = useState<string | null>(null);
+  // const [isConnected, setIsConnected] = useState(false);
+  // const [connectionError, setConnectionError] = useState<string | null>(null);
   const [showWaitingDialog, setShowWaitingDialog] = useState(false);
   const [hasJoined, setHasJoined] = useState(false);
   const [currentTurn, setCurrentTurn] = useState<string>('white');
@@ -56,8 +56,8 @@ export function GamePage() {
 
     socket.on('connect', () => {
       console.log('Connected to game socket');
-      setIsConnected(true);
-      setConnectionError(null);
+      // setIsConnected(true);
+      // setConnectionError(null);
       
       if (user && !hasJoined) {
         socket.emit("join", { 
@@ -72,7 +72,7 @@ export function GamePage() {
 
     socket.on('disconnect', () => {
       console.log('Disconnected from game socket');
-      setIsConnected(false);
+      // setIsConnected(false);
     });
 
     socket.on('game-updated', (updatedGame: IGameLean) => {
@@ -95,7 +95,7 @@ export function GamePage() {
 
     socket.on('error', (error: any) => {
       console.log('Game socket error:', error);
-      setConnectionError(error.message || 'Connection error');
+      // setConnectionError(error.message || 'Connection error');
     });
 
     return () => {
@@ -127,18 +127,18 @@ export function GamePage() {
     navigate('/games');
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active':
-        return 'green';
-      case 'waiting':
-        return 'yellow';
-      case 'finished':
-        return 'red';
-      default:
-        return 'gray';
-    }
-  };
+  // const getStatusColor = (status: string) => {
+  //   switch (status) {
+  //     case 'active':
+  //       return 'green';
+  //     case 'waiting':
+  //       return 'yellow';
+  //     case 'finished':
+  //       return 'red';
+  //     default:
+  //       return 'gray';
+  //   }
+  // };
 
   return (
     <Container size="lg" py="xl">

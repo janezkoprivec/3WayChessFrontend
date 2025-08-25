@@ -22,12 +22,12 @@ export function createHex(q: number, r: number, s: number): Hex {
       return getHexPoints(x, y, size);
     },
     getColor() {
-      return getHexColor(this.q, this.r, this.s);
+      return getHexColor(this.q, this.r);
     }
   };
 }
 
-export function getHexColor(q: number, r: number, s: number): string {
+export function getHexColor(q: number, r: number): string {
 
   const colorIndex = (2 * q + r) % 3;
   

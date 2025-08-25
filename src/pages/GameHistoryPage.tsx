@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Container, Paper, Stack, Text, Title, Group, Badge, Card, Button, Avatar, ScrollArea } from '@mantine/core';
+import { Container, Paper, Stack, Text, Title, Group, Card, Button, ScrollArea } from '@mantine/core';
 import { useParams, Link } from 'react-router-dom';
 import { ApiService } from '../services/api';
 import { ChessGame } from '../components/ChessGame';
