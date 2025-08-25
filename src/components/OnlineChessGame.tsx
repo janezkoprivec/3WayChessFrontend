@@ -195,6 +195,7 @@ export function OnlineChessGame({
     if (!gameSocket) return;
 
     const handleMoveReceived = (moveData: any) => {
+      console.log(`Move received;${moveData.from.q},${moveData.from.r}-${moveData.to.q},${moveData.to.r};${Date.now()}`);
       if (!gameState) return;
       
       try {
@@ -258,6 +259,7 @@ export function OnlineChessGame({
     
     updateTurn();
     
+    console.log(`Move made;${move.from.q}, ${move.from.r}-${move.to.q}, ${move.to.r};${Date.now()}`);
     gameSocket.emit('move', {
       from: move.from,
       to: move.to,

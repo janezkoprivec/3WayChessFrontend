@@ -22,11 +22,8 @@ export interface ApiMove {
 }
 
 export function createMoveFromApiData(apiMove: ApiMove, game: any): Move | null {
-  try {
-    console.log('Creating move from API data:', apiMove);
-    
+  try {    
     const pieces = game.getPieces();
-    console.log('Available pieces:', pieces.length);
     
     const fromPiece = pieces.find((piece: any) => 
       piece.coordinates.q === apiMove.from.q && 
@@ -35,14 +32,11 @@ export function createMoveFromApiData(apiMove: ApiMove, game: any): Move | null 
 
     if (!fromPiece) {
       console.error('No piece found at from coordinates:', apiMove.from);
-      console.log('Available pieces coordinates:', pieces.map((p: any) => ({ q: p.coordinates.q, r: p.coordinates.r })));
       return null;
     }
 
-    console.log('Found from piece:', fromPiece);
     
     const legalMoves = game.queryMoves(fromPiece.coordinates);
-    console.log('Legal moves for piece:', legalMoves.length);
     
     const matchingMove = legalMoves.find((move: Move) => 
       move.to.q === apiMove.to.q && 
@@ -53,22 +47,9 @@ export function createMoveFromApiData(apiMove: ApiMove, game: any): Move | null 
     );
 
     if (matchingMove) {
-      console.log('Found matching move:', matchingMove);
       return matchingMove;
     } else {
       console.error('No matching legal move found');
-      console.log('Looking for move with:', {
-        to: apiMove.to,
-        move_type: apiMove.move_type,
-        color: apiMove.color,
-        piece: apiMove.piece
-      });
-      console.log('Available legal moves:', legalMoves.map((m: Move) => ({
-        to: { q: m.to.q, r: m.to.r },
-        move_type: m.move_type,
-        color: m.color,
-        piece: m.piece
-      })));
       return null;
     }
   } catch (error) {

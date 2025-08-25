@@ -29,18 +29,15 @@ export function GamesComponent() {
     setGamesSocket(gamesSocket);
 
     gamesSocket.on('connect', () => {
-      console.log('Connected to games socket');
       setIsConnected(true);
       setConnectionError(null);
     });
 
     gamesSocket.on('disconnect', () => {
-      console.log('Disconnected from games socket');
       setIsConnected(false);
     });
 
     gamesSocket.on('waiting-games', (games: Game[]) => {
-      console.log('Received games:', games);
       setGames(games);
     });
 
@@ -51,7 +48,6 @@ export function GamesComponent() {
     });
 
     gamesSocket.on('error', (error: any) => {
-      console.log('Server error:', error);
       setConnectionError(error.message || 'Connection error');
     });
 
@@ -88,7 +84,6 @@ export function GamesComponent() {
     setCreateDialogOpened(false);
     lastCreatedGameColorRef.current = selectedColor;
     if (user) {
-      console.log('User found:', user);
       const createData = { 
         gameName, 
         selectedColor, 
@@ -97,7 +92,6 @@ export function GamesComponent() {
           id: user.id
         }
       };
-      console.log('Creating game with data:', createData);
       gamesSocket?.emit('create', createData);
     } else {
       console.log('User not found');

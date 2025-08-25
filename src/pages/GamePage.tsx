@@ -55,7 +55,6 @@ export function GamePage() {
     setGameSocket(socket);
 
     socket.on('connect', () => {
-      console.log('Connected to game socket');
       // setIsConnected(true);
       // setConnectionError(null);
       
@@ -71,12 +70,10 @@ export function GamePage() {
     });
 
     socket.on('disconnect', () => {
-      console.log('Disconnected from game socket');
       // setIsConnected(false);
     });
 
     socket.on('game-updated', (updatedGame: IGameLean) => {
-      console.log('Game updated:', updatedGame);
       setGame(updatedGame);
       
       if (updatedGame.status === 'active') {
@@ -87,8 +84,6 @@ export function GamePage() {
     });
 
     socket.on('turn-updated', (turnData: { currentTurn: string, playerTimes: Record<string, number>, timeControl: any }) => {
-      console.log('Turn updated:', turnData);
-      console.log('Updating player times:', turnData.playerTimes);
       setCurrentTurn(turnData.currentTurn);
       setPlayerTimes(turnData.playerTimes);
     });
