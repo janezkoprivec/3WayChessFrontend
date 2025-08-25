@@ -76,6 +76,11 @@ export function GameHistoryPage() {
     );
   }
 
+  const letters = 'ABCDEFGHIJKLMNO'; 
+  const getMoveCoordinates = (q: number, r: number) => {
+    return `${letters[q+7]}${r+8}`; 
+  }
+
   const getMoveDescription = (move: ApiMove) => {
     const pieceNames = ['', 'Pawn', 'Knight', 'Bishop', 'Rook', 'Queen', 'King'];
     const colorNames = ['White', 'Gray', 'Black'];
@@ -172,7 +177,7 @@ export function GameHistoryPage() {
                           </Text>
                         </Group>
                         <Text size="xs" c="dimmed" mt="xs">
-                          ({move.from.q},{move.from.r}) → ({move.to.q},{move.to.r})
+                          {getMoveCoordinates(move.from.q, move.from.r)} → {getMoveCoordinates(move.to.q, move.to.r)}
                         </Text>
                       </Card>
                     ))}

@@ -85,4 +85,69 @@ export function transformCoordinates(
     default:
       return { q, r, s };
   }
+}
+
+export function getChessNotation(q: number, r: number, orientation: BoardOrientation = 'white'): string {
+  const transformed = transformCoordinates(q, r, -q - r, orientation);
+  
+  const letters = 'abcdefghijklmno';
+  
+  const letterIndex = transformed.q + 7;
+  const number = -transformed.r + 8;
+  
+  if (letterIndex >= 0 && letterIndex < letters.length && number >= 1 && number <= 15) {
+    return letters[letterIndex] + number;
+  }
+  
+  return `${transformed.q},${transformed.r}`;
+}
+
+export function getBoardLabels(size: number, orientation: BoardOrientation = 'white'): {
+  letters: Array<{ label: string; x: number; y: number }>;
+  numbers: Array<{ label: string; x: number; y: number }>;
+} {
+  const letters: Array<{ label: string; x: number; y: number }> = [];
+  const numbers: Array<{ label: string; x: number; y: number }> = [];
+  
+  const letterLabels = 'abcdefghijklmno';
+  
+  const letterCoords = [
+    { q: -7, r: 2 }, { q: -6, r: 1 }, { q: -5, r: 0 }, { q: -4, r: -5 }, { q: -3, r: -5 },
+    { q: -2, r: -5 }, { q: -1, r: -5 }, { q: 0, r: -5 }, { q: 1, r: -6 }, { q: 2, r: -7 },
+    { q: 3, r: -8 }, { q: 4, r: -5 }, { q: 5, r: -5 }, { q: 6, r: -5 }, { q: 7, r: -5 }
+  ];
+  
+  const numberCoords = [
+    { q: 4, r: -7 }, { q: 4, r: -6 }, { q: 4, r: -5 }, { q: 8, r: -4 }, { q: 7, r: -3 },
+    { q: 6, r: -2 }, { q: 5, r: -1 }, { q: 4, r: 0 }, { q: 4, r: 1 }, { q: 4, r: 2 },
+    { q: 4, r: 3 }, { q: 0, r: 4 }, { q: -1, r: 5 }, { q: -2, r: 6 }, { q: -3, r: 7 }
+  ];
+  
+  letterCoords.forEach((coord, index) => {
+    if (index < letterLabels.length) {
+      const transformedCoords = transformCoordinates(coord.q, coord.r, -coord.q - coord.r, orientation);
+      const pixel = hexToPixel(transformedCoords.q, transformedCoords.r, size);
+      
+      letters.push({
+        label: letterLabels[index],
+        x: pixel.x,
+        y: pixel.y - size * 0.3
+      });
+    }
+  });
+  
+  numberCoords.forEach((coord, index) => {
+    if (index < 15) {
+      const transformedCoords = transformCoordinates(coord.q, coord.r, -coord.q - coord.r, orientation);
+      const pixel = hexToPixel(transformedCoords.q, transformedCoords.r, size);
+      
+      numbers.push({
+        label: (index + 1).toString(),
+        x: pixel.x - size * 0.2,
+        y: pixel.y + size * 0.3
+      });
+    }
+  });
+  
+  return { letters, numbers };
 } 

@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { createHex, Hex, transformCoordinates, BoardOrientation } from '../utils/hexagonUtils';
 import { Hexagon } from './Hexagon';
+import { BoardLabels } from './BoardLabels';
 import { decodePieceId } from '../utils/pieceIdUtils';
 
 export interface BoardDimensions {
@@ -15,6 +16,7 @@ export interface BoardDimensions {
 interface HexagonalBoardProps {
   height: number; 
   showCoordinates?: boolean;
+  showBoardLabels?: boolean;
   boardOrientation?: BoardOrientation;
   selectedPieceId?: string;
 }
@@ -22,6 +24,7 @@ interface HexagonalBoardProps {
 export function HexagonalBoard({ 
   height, 
   showCoordinates = false,
+  showBoardLabels = true,
   boardOrientation = 'white',
   selectedPieceId
 }: HexagonalBoardProps) {
@@ -85,6 +88,12 @@ export function HexagonalBoard({
           />
         );
       })}
+      {showBoardLabels && (
+        <BoardLabels 
+          size={size}
+          boardOrientation={boardOrientation}
+        />
+      )}
     </g>
   );
 } 

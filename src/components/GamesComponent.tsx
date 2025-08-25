@@ -124,7 +124,7 @@ export function GamesComponent() {
           </Text>
         )}
 
-        <ScrollArea h={400} type="auto">
+        <ScrollArea  type="auto">
           <Stack gap="md">
             {games.length === 0 ? (
               <Text c="dimmed" ta="center" py="xl">

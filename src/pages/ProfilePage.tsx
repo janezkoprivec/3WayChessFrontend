@@ -43,7 +43,7 @@ export function ProfilePage() {
       
       setLoadingHistory(true);
       try {
-        const response = await ApiService.get<{ games: any[] }>(`/history/games?playerId=${user?.id}&page=1&limit=10`);
+        const response = await ApiService.get<{ games: any[] }>(`/history/games?playerId=${user?.id}&page=1&limit=3`);
         const games = response.data.games.map(game => {
           return {
             ...game,

@@ -369,6 +369,7 @@ export function OnlineChessGame({
           <HexagonalBoard 
             height={height}
             showCoordinates={showCoordinates}
+            showBoardLabels={true}
             boardOrientation={boardOrientation}
             selectedPieceId={selectedPieceId}
           />

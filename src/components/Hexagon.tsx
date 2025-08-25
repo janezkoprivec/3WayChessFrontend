@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { createHex } from '../utils/hexagonUtils';
+import { createHex, getChessNotation, BoardOrientation } from '../utils/hexagonUtils';
 
 interface HexagonProps {
   q: number;
@@ -7,6 +7,8 @@ interface HexagonProps {
   s: number;
   size: number;
   showCoordinates?: boolean;
+  showChessNotation?: boolean;
+  boardOrientation?: BoardOrientation;
   fillColor: string;
   strokeColor?: string;
   strokeWidth?: number;
@@ -17,7 +19,9 @@ export function Hexagon({
   r, 
   s, 
   size, 
-  showCoordinates = false, 
+  showCoordinates = false,
+  showChessNotation = false,
+  boardOrientation = 'white',
   fillColor, 
   strokeColor, 
   strokeWidth = 1 
@@ -44,11 +48,24 @@ export function Hexagon({
           y={y}
           textAnchor="middle"
           dominantBaseline="middle"
-          fontSize="8"
+          fontSize="12"
           fill="#000"
           fontWeight="bold"
         >
-          {q},{r}
+          {q},{r},{s}
+        </text>
+      )}
+      {showChessNotation && (
+        <text
+          x={x}
+          y={y + 8}
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fontSize="6"
+          fill="#666"
+          fontWeight="normal"
+        >
+          {getChessNotation(q, r, boardOrientation)}
         </text>
       )}
     </g>

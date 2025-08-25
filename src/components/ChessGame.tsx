@@ -357,6 +357,7 @@ export function ChessGame({
             <HexagonalBoard 
               height={height}
               showCoordinates={showCoordinates}
+              showBoardLabels={true}
               boardOrientation={currentBoardOrientation}
               selectedPieceId={selectedPieceId}
             />
