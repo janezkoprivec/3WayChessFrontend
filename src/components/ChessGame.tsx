@@ -44,11 +44,10 @@ export function ChessGame({
   const [selectedPiece, setSelectedPiece] = useState<GamePiece | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [boardOrientation, setBoardOrientation] = useState<BoardOrientation>('white');
+  const [boardOrientation] = useState<BoardOrientation>('white');
   const { currentTurn, updateTurn } = useCurrentTurn(game);
 
   const currentBoardOrientation = externalBoardOrientation || boardOrientation;
-  setBoardOrientation('white')
 
   const selectedPieceId = useMemo(() => {
     return selectedPiece ? encodePieceId(selectedPiece.player, selectedPiece.piece, selectedPiece.coordinates.q, selectedPiece.coordinates.r) : undefined;
@@ -352,7 +351,7 @@ export function ChessGame({
             <HexagonalBoard 
               height={height}
               showCoordinates={showCoordinates}
-              showBoardLabels={true}
+              showBoardLabels={false}
               boardOrientation={currentBoardOrientation}
               selectedPieceId={selectedPieceId}
             />
