@@ -15,6 +15,6 @@ COPY . .
 
 RUN yarn build
 
-EXPOSE 3000
+EXPOSE 8081
 
-CMD [ "serve", "-s", "dist" ]
+CMD [ "serve", "-s", "dist", "-l", "8081" ]
