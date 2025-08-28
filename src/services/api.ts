@@ -79,6 +79,7 @@ export class ApiService {
 
   static async post<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
     const url = buildApiUrl(endpoint);
+
     return this.request<T>(url, {
       method: 'POST',
       body: data ? JSON.stringify(data) : undefined,

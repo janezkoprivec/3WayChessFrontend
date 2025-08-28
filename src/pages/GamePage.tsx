@@ -49,7 +49,7 @@ export function GamePage() {
   const setUpSocket = () => {
     if (!id) return;
 
-    const socketManager = new Manager(API_CONFIG.BASE_URL.replace('/api', ''));
+    const socketManager = new Manager(API_CONFIG.SOCKETIO_URL);
     const socket = socketManager.socket(`/games/${id}`);
 
     setGameSocket(socket);

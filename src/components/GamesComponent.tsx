@@ -23,7 +23,8 @@ export function GamesComponent() {
   const navigate = useNavigate();
 
   const setUpSockets = () => {
-    const socketManager = new Manager(API_CONFIG.BASE_URL.replace('/api', ''));
+    console.log('API_CONFIG.SOCKETIO_URL', API_CONFIG.SOCKETIO_URL);
+    const socketManager = new Manager(API_CONFIG.SOCKETIO_URL);
     const gamesSocket = socketManager.socket('/games');
 
     setGamesSocket(gamesSocket);
