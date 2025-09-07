@@ -12,6 +12,7 @@ import { IGameLean } from '../types/game';
 
 interface OnlineChessGameProps {
   height: number;
+  width: number;
   showCoordinates?: boolean;
   playerColor: string;
   gameSocket: Socket | null;
@@ -57,6 +58,7 @@ const useCountdownTimer = (initialTime: number, isActive: boolean) => {
 
 export function OnlineChessGame({ 
   height, 
+  width,
   showCoordinates = false,
   playerColor,
   gameSocket,
@@ -95,7 +97,7 @@ export function OnlineChessGame({
       }
     }
     
-    const totalHexagonHeight = height - 40;
+    const totalHexagonHeight = Math.min(height, width) - (width > height ? 100 : 40);
     const hexagonHeight = totalHexagonHeight / 12;
     const size = hexagonHeight / Math.sqrt(3);
     
@@ -369,7 +371,7 @@ export function OnlineChessGame({
           }}
         >
           <HexagonalBoard 
-            height={height}
+            size={boardSize}
             showCoordinates={showCoordinates}
             showBoardLabels={true}
             boardOrientation={boardOrientation}

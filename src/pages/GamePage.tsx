@@ -35,7 +35,7 @@ export function GamePage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const selectedColor = searchParams.get('color') || 'random';
-  const { height: windowHeight } = useWindowSize();
+  const { height: windowHeight, width: windowWidth } = useWindowSize();
   
   const [game, setGame] = useState<IGameLean | null>(null);
   const [gameSocket, setGameSocket] = useState<Socket | null>(null);
@@ -140,7 +140,8 @@ export function GamePage() {
 
       {game && game.status === 'active' && (
         <OnlineChessGame
-          height={windowHeight - 200}
+          height={windowHeight - 60}
+          width={windowWidth}
           showCoordinates={false}
           playerColor={selectedColor}
           gameSocket={gameSocket}

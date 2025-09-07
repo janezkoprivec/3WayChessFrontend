@@ -14,7 +14,7 @@ export interface BoardDimensions {
 }
 
 interface HexagonalBoardProps {
-  height: number; 
+  size: number;
   showCoordinates?: boolean;
   showBoardLabels?: boolean;
   boardOrientation?: BoardOrientation;
@@ -22,7 +22,7 @@ interface HexagonalBoardProps {
 }
 
 export function HexagonalBoard({ 
-  height, 
+  size,
   showCoordinates = false,
   showBoardLabels = true,
   boardOrientation = 'white',
@@ -36,7 +36,7 @@ export function HexagonalBoard({
     return null;
   }, [selectedPieceId]);
 
-  const { hexagons, size } = useMemo(() => {
+  const { hexagons } = useMemo(() => {
     const hexDict: Record<string, Hex> = {};
     
     for (let q = -4; q < 8; q++) {
@@ -54,16 +54,11 @@ export function HexagonalBoard({
     }
     
     const hexagons = Object.values(hexDict);
-
-    const totalHexagonHeight = height - 40;
-    const hexagonHeight = totalHexagonHeight / 12;
-    const size = hexagonHeight / Math.sqrt(3);
     
     return {
       hexagons,
-      size
     };
-  }, [height]);
+  }, [size]);
 
   return (
     <g id="board-layer">

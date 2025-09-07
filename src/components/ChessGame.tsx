@@ -20,6 +20,7 @@ interface Player {
 
 interface ChessGameProps {
   height: number;
+  width: number;
   showCoordinates?: boolean;
   moves?: ApiMove[];
   isReplayMode?: boolean;
@@ -31,6 +32,7 @@ interface ChessGameProps {
 
 export function ChessGame({ 
   height, 
+  width,
   showCoordinates = false,
   moves = [],
   isReplayMode = false,
@@ -70,7 +72,7 @@ export function ChessGame({
       }
     }
     
-    const totalHexagonHeight = height - 40;
+    const totalHexagonHeight = Math.min(height, width) - (width > height ? 100 : 40);
     const hexagonHeight = totalHexagonHeight / 12;
     const size = hexagonHeight / Math.sqrt(3);
     
@@ -93,7 +95,7 @@ export function ChessGame({
         maxY: maxY + size
       }
     };
-  }, [height]);
+  }, [height, width]);
 
   useEffect(() => {
     const initializeGame = async () => {
@@ -341,7 +343,7 @@ export function ChessGame({
 
           <svg
             width={boardDimensions.width}
-            height={height}
+            height={boardDimensions.height}
             viewBox={`${boardDimensions.minX} ${boardDimensions.minY} ${boardDimensions.width} ${boardDimensions.height}`}
             style={{ 
               maxWidth: '100%',
@@ -349,7 +351,7 @@ export function ChessGame({
             }}
           >
             <HexagonalBoard 
-              height={height}
+              size={boardSize}
               showCoordinates={showCoordinates}
               showBoardLabels={false}
               boardOrientation={currentBoardOrientation}
