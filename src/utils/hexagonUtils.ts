@@ -122,16 +122,36 @@ export function getBoardLabels(size: number, orientation: BoardOrientation = 'wh
     { q: 6, r: -2 }, { q: 5, r: -1 }, { q: 4, r: 0 }, { q: 4, r: 1 }, { q: 4, r: 2 },
     { q: 4, r: 3 }, { q: 0, r: 4 }, { q: -1, r: 5 }, { q: -2, r: 6 }, { q: -3, r: 7 }
   ];
+
+
+  const letterModifier = (x: number, y: number, orientation: BoardOrientation) => {
+    if (orientation === 'white') {
+      return { x: x, y: y - size * 0.3 };
+    } else if (orientation === 'black') {
+      return { x: x - size * 0.2, y: y + size * 0.2 };
+    } else if (orientation === 'grey') {
+      return { x: x + size * 0.2, y: y + size * 0.18};
+    }
+  }
+
+  const numberModifier = (x: number, y: number, orientation: BoardOrientation) => {
+    if (orientation === 'white') {
+      return { x: x - size * 0.2, y: y + size * 0.3 };
+    } else if (orientation === 'black') {
+      return { x: x-size*1.2, y: y+size };
+    } else if (orientation === 'grey') {
+      return { x, y: y + size*1.3 };
+    }
+  }
   
   letterCoords.forEach((coord, index) => {
     if (index < letterLabels.length) {
-      const transformedCoords = transformCoordinates(coord.q, coord.r, -coord.q - coord.r, orientation);
+      const transformedCoords = transformCoordinates(coord.q, coord.r, -1 -coord.q - coord.r, orientation);
       const pixel = hexToPixel(transformedCoords.q, transformedCoords.r, size);
       
       letters.push({
         label: letterLabels[index],
-        x: pixel.x,
-        y: pixel.y - size * 0.3
+        ...letterModifier(pixel.x, pixel.y, orientation)!
       });
     }
   });
@@ -143,8 +163,7 @@ export function getBoardLabels(size: number, orientation: BoardOrientation = 'wh
       
       numbers.push({
         label: (index + 1).toString(),
-        x: pixel.x - size * 0.2,
-        y: pixel.y + size * 0.3
+        ...numberModifier(pixel.x, pixel.y, orientation)!
       });
     }
   });
