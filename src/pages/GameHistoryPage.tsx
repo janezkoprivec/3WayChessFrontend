@@ -136,6 +136,7 @@ export function GameHistoryPage() {
                 <div style={{ position: 'relative', width: '600px' }}>
                   <ChessGame
                     height={600}
+                    width={600}
                     showCoordinates={false}
                     moves={gameData.moves}
                     isReplayMode={true}
